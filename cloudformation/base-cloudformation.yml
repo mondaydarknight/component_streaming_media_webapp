@@ -1,0 +1,36 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - beta
+      - prod
+  MetadataTableName:
+    Type: String
+    Default: Metadata
+    Description: The name of DynamoDB table which stores file metadata
+
+Resources:
+  MetadataTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Ref MetadataTableName
+      AttributeDefinitions:
+        - AttributeName: objectUrl
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: N
+      KeySchema:
+        - AttributeName: objectUrl
+          KeyType: HASH
+        - AttributeName: createdAt
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: expiredAt
+        Enabled: true
+      SSESpecification:
+        SSEEnabled: true
+      BillingMode: PAY_PER_REQUEST
