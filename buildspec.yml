@@ -23,7 +23,7 @@ phases:
           --s3-bucket ${S3_BUCKET} \
           --output-template-file base-ci-pipeline-template.yml
 
-artifact:
+artifacts:
   type: zip
   files:
     - base-ci-pipeline-template.yml
