@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    AWS_CLOUDFORMATION_TEMPLATE: cloudformation/base-cloudformation.yml
+    S3_BUCKET: component_streaming_media_webapp
 
 phases:
   install:
@@ -10,11 +10,20 @@ phases:
       java: corretto11
       python: 3.8
     commands:
-      - pip3 install --upgrade awscli
+      - pip3 install --upgrade pip
   pre_build:
     commands:
-      aws cloudformation validate-template --template-body file://${AWS_CLOUDFORMATION_TEMPLATE}
+      - |
+        aws cloudformation validate-template --template-body file://cloudformation/base-ci-pipeline-template.yml
+  build:
+    commands:
+      - |
+        aws cloudformation package \
+          --template-file cloudformation/base-ci-pipeline-template.yml \
+          --s3-bucket ${S3_BUCKET} \
+          --output-template-file base-ci-pipeline-template.yml
 
-artifacts:
+artifact:
+  type: zip
   files:
-    - cloudformation/base-cloudformation.yml
+    - base-ci-pipeline-template.yml
